@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>EVEREST - Luxury Watches Inspired by Altitude</title>
+<meta name="description" content="Everest Watch creates precision chronographs inspired by altitude, clarity, and presence. Explore E.W Base Camp, E.W High Camp, and E.W Summit." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Cinzel+Decorative:wght@400;700&family=Inter:wght@100;200;300;400;500;600;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="styles.css?v=20260617-5" />
+</head>
+<body>
+
+<!-- PRELOADER -->
+<div class="loader" id="loader">
+  <div class="loader__inner">
+    <span class="loader__mark">EVEREST</span>
+    <div class="loader__bar"><span id="loaderFill"></span></div>
+    <span class="loader__pct text-ascent-light" id="loaderPct">00</span>
+  </div>
+</div>
+
+<!-- PROGRESS -->
+<div class="scroll-progress"><span id="scrollFill"></span></div>
+
+<!-- NAV -->
+<header class="nav" id="nav">
+  <a href="#hero" class="nav__brand" data-scroll><span>EVEREST</span></a>
+  <button class="nav__toggle" id="burger" aria-label="Open navigation menu" aria-controls="site-menu" aria-expanded="false">
+    <span></span>
+    <span></span>
+    <span></span>
+  </button>
+</header>
+
+<!-- TOP MENU -->
+<nav class="nav-menu" id="site-menu" aria-label="Primary navigation">
+  <ul>
+    <li><a href="collection.html" data-split-nav>Collection</a></li>
+    <li><a href="#craft" data-scroll data-split-nav>Craft</a></li>
+    <li><a href="#ascent" data-scroll data-split-nav>Story</a></li>
+    <li class="nav-menu__action">
+      <a href="mailto:concierge@everest.watch" class="btn btn--stroke nav-menu__cta text-button">
+        <span class="btn__label">
+          <span class="is-default">Enquiry</span>
+          <span class="is-hover" aria-hidden="true">Enquiry</span>
+        </span>
+        <span class="btn__fill" aria-hidden="true"></span>
+      </a>
+    </li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section class="hero" id="hero">
+  <video class="hero__video" autoplay muted loop playsinline poster="media/img%202.jpeg">
+    <source src="media/video%201.mp4" type="video/mp4" />
+  </video>
+  <div class="hero__veil"></div>
+  <div class="hero__content">
+    <a href="#manifesto" class="hero__scroll" data-scroll aria-label="Scroll down to explore">
+      <span class="hero__scroll-label">Scroll</span>
+      <svg class="hero__scroll-arrow" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <path d="M12 4v15M6 13l6 6 6-6" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" />
+      </svg>
+    </a>
+    <h1 class="hero__heading text-heading-1">PRECISION, BORN AT ALTITUDE.</h1>
+  </div>
+  <span class="hero__side hero__side--l text-ascent-light">N 27° 59′ 17″</span>
+  <span class="hero__side hero__side--r text-ascent-light">E 86° 55′ 31″</span>
+</section>
+
+<!-- MANIFESTO — ScrollFloat, line by line -->
+<section class="manifesto" id="manifesto">
+  <div class="manifesto__sticky">
+    <div class="manifesto__lines" id="manifestoLines">
+      <p class="mline text-body-1">Some measure time in hours.</p>
+      <p class="mline text-body-1">We measure it in elevation.</p>
+      <p class="mline mline--break text-body-1">Every Everest is assembled for clarity, weight, and presence — </p>
+      <p class="mline text-body-1">built for the moments where precision matters most.</p>
+      <div class="manifesto__metric" aria-label="8848 metres, inspired by the world's highest point">
+        <span class="manifesto__metric-number">8848m</span>
+        <span class="manifesto__metric-label text-body-3-light">Inspired by the world's highest point</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SHOWCASE — scroll-driven 360° -->
+<section class="showcase" id="showcase">
+  <div class="showcase__sticky">
+    <span class="showcase__ghost" aria-hidden="true">E.W SUMMIT</span>
+    <canvas id="seqCanvas" class="showcase__canvas"></canvas>
+    <div class="showcase__veil"></div>
+
+    <div class="showcase__cap cap--left" data-from="0" data-to="0.21">
+      <span class="eyebrow text-ascent-light">THE ROTATION</span>
+      <h2 class="text-heading-2">EVERY ANGLE,<br />CONSIDERED.</h2>
+      <p class="text-body-3-light">Turn the E.W Summit through a full revolution &mdash;<br />from dial depth to case profile, every surface<br />is shaped to catch light with restraint and reveal<br />strength without excess.</p>
+    </div>
+    <div class="showcase__cap cap--right" data-from="0.25" data-to="0.47">
+      <span class="eyebrow text-ascent-light">THE CASE</span>
+      <h2 class="text-heading-2">SHAPED FOR<br />PRESENCE.</h2>
+      <p class="text-body-3-light">A steel profile balanced for the wrist &mdash;<br />brushed for strength, polished where the light<br />should land, and sculpted to feel solid<br />without looking heavy.</p>
+    </div>
+    <div class="showcase__cap cap--left" data-from="0.51" data-to="0.72">
+      <span class="eyebrow text-ascent-light">THE MOVEMENT</span>
+      <h2 class="text-heading-2">BUILT FOR<br />THE MOMENT.</h2>
+      <p class="text-body-3-light">A chronograph layout designed for clear timing<br />and everyday confidence &mdash; precise at a glance,<br />calm in detail, and made to keep pace<br />without demanding attention.</p>
+    </div>
+    <div class="showcase__cap cap--center" data-from="0.78" data-to="1">
+      <div class="summit-lockup">
+        <div class="summit-lockup__copy">
+          <span class="summit-lockup__tag text-ascent">THE SUMMIT</span>
+          <h2 class="summit-lockup__title text-heading-2">WHERE PRECISION</h2>
+          <p class="summit-lockup__subtitle text-body-1">MEETS ALTITUDE</p>
+        </div>
+        <a href="#collection" class="btn btn--stroke summit-lockup__cta text-button" data-scroll>
+          <span class="btn__label">
+            <span class="is-default">Discover the Collection</span>
+            <span class="is-hover" aria-hidden="true">Discover the Collection</span>
+          </span>
+          <span class="btn__fill" aria-hidden="true"></span>
+        </a>
+      </div>
+    </div>
+
+    <div class="showcase__hint text-ascent-light" id="showHint"><span class="showcase__hint-dot"></span>Scroll to rotate</div>
+    <div class="showcase__bar"><i id="seqBar"></i></div>
+  </div>
+</section>
+
+<!-- COLLECTION -->
+<section class="collection" id="collection">
+  <div class="section-head">
+    <span class="section-head__index text-ascent-light">01 — Collection</span>
+    <h2 class="section-head__title text-heading-2">Three altitudes.<br />One obsession.</h2>
+  </div>
+
+  <!-- MODEL 1 -->
+  <article class="model" id="ew2026">
+    <div class="model__media">
+      <img src="media/img%201.jpeg" alt="Everest E.W Base Camp chronograph with blue dial" data-parallax="0.12" />
+    </div>
+    <div class="model__info">
+      <span class="model__tag text-ascent-light reveal">Base Camp · Daily</span>
+      <h3 class="model__name text-heading-2 reveal-up">E.W Base Camp</h3>
+      <p class="model__desc text-body-2 reveal">A clear blue dial and balanced case make Base Camp easy on the wrist, precise at a glance, and ready for daily wear.</p>
+      <ul class="model__specs">
+        <li class="reveal"><span class="text-ascent-light">Case</span><span class="text-body-3-light">41mm Stainless Steel</span></li>
+        <li class="reveal"><span class="text-ascent-light">Dial</span><span class="text-body-3-light">Summit Blue</span></li>
+        <li class="reveal"><span class="text-ascent-light">Wear</span><span class="text-body-3-light">Everyday Confidence</span></li>
+        <li class="reveal"><span class="text-ascent-light">Movement</span><span class="text-body-3-light">Chronograph Layout</span></li>
+      </ul>
+      <a href="collection.html#ew2026" class="btn-secondary btn-secondary--flush reveal">
+        <span>Discover Base Camp</span>
+        <span class="btn-secondary__arrow" aria-hidden="true">
+          <svg class="btn-secondary__ico" viewBox="0 0 22 12" fill="none"><path d="M1 6h17M14 1.5 19.5 6 14 10.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" /></svg>
+          <svg class="btn-secondary__ico" viewBox="0 0 22 12" fill="none"><path d="M1 6h17M14 1.5 19.5 6 14 10.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" /></svg>
+        </span>
+      </a>
+    </div>
+  </article>
+
+  <!-- MODEL 2 -->
+  <article class="model model--reverse" id="ew2226">
+    <div class="model__media">
+      <img src="media/img%204.jpeg" alt="Everest E.W High Camp three-quarter view" data-parallax="0.12" />
+    </div>
+    <div class="model__info">
+      <span class="model__tag text-ascent-light reveal">High Camp · Sport</span>
+      <h3 class="model__name text-heading-2 reveal-up">E.W High Camp</h3>
+      <p class="model__desc text-body-2 reveal">A tachymeter-style bezel, layered sub-dials, and stronger wrist presence give High Camp a sport-focused feel without losing restraint.</p>
+      <ul class="model__specs">
+        <li class="reveal"><span class="text-ascent-light">Case</span><span class="text-body-3-light">43mm Stainless Steel</span></li>
+        <li class="reveal"><span class="text-ascent-light">Bezel</span><span class="text-body-3-light">Tachymeter Style</span></li>
+        <li class="reveal"><span class="text-ascent-light">Wear</span><span class="text-body-3-light">Sport Presence</span></li>
+        <li class="reveal"><span class="text-ascent-light">Movement</span><span class="text-body-3-light">Chronograph Layout</span></li>
+      </ul>
+      <a href="collection.html#ew2226" class="btn-secondary btn-secondary--flush reveal">
+        <span>Discover High Camp</span>
+        <span class="btn-secondary__arrow" aria-hidden="true">
+          <svg class="btn-secondary__ico" viewBox="0 0 22 12" fill="none"><path d="M1 6h17M14 1.5 19.5 6 14 10.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" /></svg>
+          <svg class="btn-secondary__ico" viewBox="0 0 22 12" fill="none"><path d="M1 6h17M14 1.5 19.5 6 14 10.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" /></svg>
+        </span>
+      </a>
+    </div>
+  </article>
+
+  <!-- MODEL 3 -->
+  <article class="model" id="ew2662">
+    <div class="model__media">
+      <img src="media/img%202.jpeg" alt="Everest E.W Summit side profile" data-parallax="0.12" />
+    </div>
+    <div class="model__info">
+      <span class="model__tag text-ascent-light reveal">Summit · Apex</span>
+      <h3 class="model__name text-heading-2 reveal-up">E.W Summit</h3>
+      <p class="model__desc text-body-2 reveal">The Summit brings the line into its most assertive form, with a sculpted profile, knurled crown, and polished highlights that catch light without excess.</p>
+      <ul class="model__specs">
+        <li class="reveal"><span class="text-ascent-light">Case</span><span class="text-body-3-light">44mm Stainless Steel</span></li>
+        <li class="reveal"><span class="text-ascent-light">Crown</span><span class="text-body-3-light">Knurled Profile</span></li>
+        <li class="reveal"><span class="text-ascent-light">Wear</span><span class="text-body-3-light">Strong Wrist Presence</span></li>
+        <li class="reveal"><span class="text-ascent-light">Movement</span><span class="text-body-3-light">Chronograph Layout</span></li>
+      </ul>
+      <a href="collection.html#ew2662" class="btn-secondary btn-secondary--flush reveal">
+        <span>Discover Summit</span>
+        <span class="btn-secondary__arrow" aria-hidden="true">
+          <svg class="btn-secondary__ico" viewBox="0 0 22 12" fill="none"><path d="M1 6h17M14 1.5 19.5 6 14 10.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" /></svg>
+          <svg class="btn-secondary__ico" viewBox="0 0 22 12" fill="none"><path d="M1 6h17M14 1.5 19.5 6 14 10.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" /></svg>
+        </span>
+      </a>
+    </div>
+  </article>
+</section>
+
+<!-- CRAFT -->
+<section class="craft" id="craft">
+  <figure class="craft__intro-media">
+    <img src="media/img%203.jpeg" alt="Macro detail of the Everest watch dial and case" />
+    <figcaption class="craft__intro-overlay">
+      <span class="section-head__index text-ascent-light">02 — CRAFT</span>
+      <h2 class="craft__intro-title text-heading-2">MEASURED BY DETAIL</h2>
+    </figcaption>
+  </figure>
+  <div class="craft__grid">
+    <figure class="craft__cell reveal-up">
+      <img class="craft__cell-img" src="media/img%203.jpeg" alt="Macro of dial texture" />
+      <video class="craft__cell-video" src="media/video%202.mp4" muted loop playsinline preload="none" data-hover-video aria-hidden="true"></video>
+      <figcaption><strong class="text-body-3">The Dial</strong><span class="text-body-3-light">Sunburst lacquer, finished to hold light without glare.</span></figcaption>
+    </figure>
+    <figure class="craft__cell reveal-up">
+      <img class="craft__cell-img" src="media/img%205.jpeg" alt="Macro of knurled bezel" />
+      <video class="craft__cell-video" src="media/video%203.mp4" muted loop playsinline preload="none" data-hover-video aria-hidden="true"></video>
+      <figcaption><strong class="text-body-3">The Bezel</strong><span class="text-body-3-light">Knurled steel, shaped for confident handling and quiet presence.</span></figcaption>
+    </figure>
+  </div>
+  <div class="craft__stats">
+    <div class="stat reveal"><span class="stat__num" data-count="8848">0</span><span class="stat__label text-ascent-light">Metres inspiring the line</span></div>
+    <div class="stat reveal"><span class="stat__num" data-count="3">0</span><span class="stat__label text-ascent-light">Altitude-led models</span></div>
+    <div class="stat reveal"><span class="stat__num" data-count="3">0</span><span class="stat__label text-ascent-light">Core design principles</span></div>
+  </div>
+</section>
+
+<!-- ASCENT / STORY -->
+<section class="ascent" id="ascent">
+  <div class="ascent__media">
+    <img src="media/img%204.jpeg" alt="Everest chronograph beauty shot" data-parallax="0.1" />
+  </div>
+  <div class="ascent__copy">
+    <span class="section-head__index text-ascent-light reveal">03 — Story</span>
+    <h2 class="ascent__title text-heading-2 reveal-up">For the ones who<br />keep climbing.</h2>
+    <p class="text-body-2 reveal">Everest is not built for the boardroom — though it belongs there too. It is built for the moment after, when the city falls away and the only thing keeping time is on your wrist.</p>
+    <p class="text-body-2 reveal">Adventure and luxury were never opposites. We simply put them on the same dial.</p>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="footer__top">
+    <span class="footer__brand">EVEREST</span>
+    <div class="footer__cols">
+      <div><h4 class="text-ascent-light">Collection</h4><a class="text-body-3" href="#ew2026" data-scroll>E.W Base Camp</a><a class="text-body-3" href="#ew2226" data-scroll>E.W High Camp</a><a class="text-body-3" href="#ew2662" data-scroll>E.W Summit</a></div>
+      <div><h4 class="text-ascent-light">Maison</h4><a class="text-body-3" href="#craft" data-scroll>Craft</a><a class="text-body-3" href="#ascent" data-scroll>Story</a></div>
+      <div><h4 class="text-ascent-light">Connect</h4><a class="text-body-3" href="#">Instagram</a><a class="text-body-3" href="#">Expeditions</a><a class="text-body-3" href="#">Press</a></div>
+    </div>
+  </div>
+  <div class="footer__bottom">
+    <span class="text-ascent-light">© MMXXVI Everest Watch — Luxury forged by altitude.</span>
+    <span class="text-ascent-light">N 27° 59′ 17″ · E 86° 55′ 31″</span>
+  </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/@studio-freight/lenis@1.0.42/dist/lenis.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
+<script src="script.js?v=20260617-5"></script>
+</body>
+</html>

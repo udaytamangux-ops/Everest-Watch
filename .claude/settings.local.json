@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(ffmpeg -version)",
+      "Bash(echo \"exit: $?\")",
+      "WebFetch(domain:www.youtube.com)"
+    ]
+  }
+}
