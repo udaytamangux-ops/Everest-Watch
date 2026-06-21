@@ -85,91 +85,253 @@
     revealEls.forEach((el) => el.classList.add('in'));
   }
 
-  /* ---------- MANIFESTO: ScrollFloat per-character (sticky-scrubbed)
-     Ported from the ScrollFloat React Bits component to vanilla GSAP.
-     Each .mline is split into .char spans; chars animate from
-     yPercent:120 / scaleY:2.3 / scaleX:0.7 → normal with back.inOut(2)
-     and stagger:0.03, scrubbed by the section's scroll progress.       ---------- */
-  (function scrollFloat() {
-    const section = document.getElementById('manifesto');
-    const linesEl = document.getElementById('manifestoLines');
-    if (!section || !linesEl) return;
-    const lines = Array.from(linesEl.querySelectorAll('.mline'));
-    const metric = linesEl.querySelector('.manifesto__metric');
+  /* ---------- MANIFESTO: VariableProximity text ----------
+     Ported from the VariableProximity React Bits component to vanilla JS.
+     Each line is split into letters; each letter's font-variation-settings
+     weight and optical-size settings interpolate toward the stronger state as the cursor
+     nears it, with a linear falloff inside `radius`. Runs only while the
+     section is in view, on hover-capable, non-reduced-motion devices.       */
+  (function variableProximity() {
+    const container = document.getElementById('manifestoLines');
+    if (!container) return;
+    const lines = Array.from(container.querySelectorAll('[data-proximity]'));
+    if (!lines.length) return;
 
-    // split each line into individual .char spans (spaces → &nbsp;)
+    const FROM = { wght: 400, opsz: 14 };
+    const TO = { wght: 850, opsz: 32 };
+    const radius = 130;
+    const letters = [];
+
+    // split each line into per-letter .vp-char spans (words kept unbroken)
     lines.forEach((line) => {
-      const text = line.textContent;
+      const text = line.textContent.trim();
       line.textContent = '';
       text.split(' ').forEach((word, wi, arr) => {
         const w = document.createElement('span');
-        w.className = 'mword';
+        w.style.display = 'inline-block';
+        w.style.whiteSpace = 'nowrap';
         for (const ch of word) {
-          const c = document.createElement('span');
-          c.className = 'char';
-          c.textContent = ch;
-          w.appendChild(c);
+          const s = document.createElement('span');
+          s.className = 'vp-char';
+          s.textContent = ch;
+          w.appendChild(s);
+          letters.push(s);
         }
         line.appendChild(w);
-        if (wi < arr.length - 1) line.appendChild(document.createTextNode(' '));
+        if (wi < arr.length - 1) line.appendChild(document.createTextNode(' '));
       });
     });
 
-    if (!window.gsap) return;
+    const hoverable = window.matchMedia('(hover:hover)').matches;
+    if (reduced || !hoverable) return; // leave text at its base weight
 
-    let tl = null;
-    function build() {
-      if (tl) tl.kill();
+    const section = document.getElementById('manifesto');
+    const mouse = { x: -9999, y: -9999 };
+    let active = false;
+    window.addEventListener('mousemove', (e) => { mouse.x = e.clientX; mouse.y = e.clientY; }, { passive: true });
 
-      // ScrollFloat start state
-      gsap.set(linesEl.querySelectorAll('.char'), {
-        willChange: 'opacity, transform',
-        opacity: 0,
-        yPercent: 120,
-        scaleY: 2.3,
-        scaleX: 0.7,
-        transformOrigin: '50% 0%'
+    if ('IntersectionObserver' in window && section) {
+      new IntersectionObserver((ents) => { ents.forEach((en) => { active = en.isIntersecting; }); },
+        { threshold: 0 }).observe(section);
+    } else { active = true; }
+
+    const last = { x: null, y: null };
+    function frame() {
+      requestAnimationFrame(frame);
+      if (!active) return;
+      if (mouse.x === last.x && mouse.y === last.y) return;
+      last.x = mouse.x; last.y = mouse.y;
+      for (let i = 0; i < letters.length; i++) {
+        const el = letters[i];
+        const r = el.getBoundingClientRect();
+        const cx = r.left + r.width / 2;
+        const cy = r.top + r.height / 2;
+        const d = Math.hypot(mouse.x - cx, mouse.y - cy);
+        const f = d < radius ? 1 - d / radius : 0; // linear falloff
+        const wght = Math.round(FROM.wght + (TO.wght - FROM.wght) * f);
+        const opsz = (FROM.opsz + (TO.opsz - FROM.opsz) * f).toFixed(1);
+        el.style.fontWeight = String(wght);
+        el.style.fontVariationSettings = "'wght' " + wght + ", 'opsz' " + opsz;
+      }
+    }
+    requestAnimationFrame(frame);
+  })();
+
+  /* ---------- COLLECTION: scroll-driven rotating carousel ----------
+     Adapted from the TOONHUB figurine carousel, but rotation is driven by
+     scroll progress, not buttons. Each watch orbits a circular path; the
+     front watch is large/sharp, the sides shrink/blur/fade. The per-watch
+     callout lives inside the item, so the title + CTA travel with the watch.
+     A small lerp on the displayed phase keeps the motion buttery.          */
+  (function carousel() {
+    const section = document.getElementById('collection');
+    const stage = document.getElementById('cwStage');
+    if (!section || !stage) return;
+    const items = Array.from(stage.querySelectorAll('.cw-item'));
+    const hint = document.getElementById('cwHint');
+    const N = items.length;
+    if (!N) return;
+
+    const callouts = Array.from(document.querySelectorAll('#cwCallouts .cw-call'));
+    const sticky = section.querySelector('.cw__sticky');
+    const lineEl = document.getElementById('cwLeaderLine');
+    const endEl = document.getElementById('cwLeaderEnd');
+    const twoZone = window.matchMedia('(min-width:901px)');
+    const hotspots = items.map((it) => {
+      const v = (it.getAttribute('data-hotspot') || '0.5,0.45').split(',');
+      return [parseFloat(v[0]) || 0.5, parseFloat(v[1]) || 0.45];
+    });
+
+    /* Background removal — key out the dark studio backdrop so each watch
+       floats on the black stage. Alpha is driven by the brightest channel
+       (value), not luminance, so the blue dials are preserved. One-time,
+       runs at a downscaled size for speed; same-origin so canvas is clean. */
+    (function keyOutBackdrops() {
+      const LO = 56, HI = 96, MAXW = 1000; // brightness key thresholds
+      stage.querySelectorAll('.cw-card img').forEach((img) => {
+        const run = () => {
+          if (!img.naturalWidth) return;
+          const scale = Math.min(1, MAXW / img.naturalWidth);
+          const w = Math.round(img.naturalWidth * scale);
+          const h = Math.round(img.naturalHeight * scale);
+          const c = document.createElement('canvas');
+          c.width = w; c.height = h;
+          const cx2 = c.getContext('2d');
+          cx2.drawImage(img, 0, 0, w, h);
+          let data;
+          try { data = cx2.getImageData(0, 0, w, h); } catch (e) { return; } // tainted -> leave as-is
+          const px = data.data;
+          for (let i = 0; i < px.length; i += 4) {
+            const val = Math.max(px[i], px[i + 1], px[i + 2]);
+            let a;
+            if (val <= LO) a = 0;
+            else if (val >= HI) a = 255;
+            else { const t = (val - LO) / (HI - LO); a = Math.round(t * t * (3 - 2 * t) * 255); }
+            px[i + 3] = a;
+          }
+          cx2.putImageData(data, 0, 0);
+          img.src = c.toDataURL('image/png');
+        };
+        if (img.complete && img.naturalWidth) run();
+        else img.addEventListener('load', run, { once: true });
       });
-      if (metric) gsap.set(metric, { opacity: 0, y: 18 });
+    })();
 
-      // vertical centering: keep active line at viewport mid-point
-      const y = lines.map((l) => -(l.offsetTop + l.offsetHeight / 2));
-      gsap.set(linesEl, { y: y[0] });
-
-      tl = gsap.timeline({ paused: true });
-      const step = 0.68;
-      lines.forEach((line, i) => {
-        const at = i * step;
-        tl.to(line.querySelectorAll('.char'), {
-          opacity: 1,
-          yPercent: 0,
-          scaleY: 1,
-          scaleX: 1,
-          ease: 'back.inOut(2)',
-          duration: 0.6,
-          stagger: 0.03
-        }, at);
-        if (i > 0) tl.to(linesEl, { y: y[i], duration: 0.58, ease: 'power3.inOut' }, at);
-      });
-      if (metric) tl.to(metric, { opacity: 1, y: 0, duration: 0.45, ease: 'power2.out' },
-        Math.max(lines.length * step - 0.35, 0));
-
-      update();
+    // reduced motion -> static text list + watch row (CSS .cw--static handles layout)
+    if (reduced) {
+      section.classList.add('cw--static');
+      callouts.forEach((c) => { const cta = c.querySelector('.cw-call__cta'); if (cta) cta.tabIndex = 0; });
+      return;
     }
 
-    function update() {
-      if (!tl) return;
-      const rect = section.getBoundingClientRect();
+    /* The active callout is structurally separate from the orbiting watch and
+       lives in the protected text zone; it crossfades to match the front watch.
+       The leader line's start is pinned to the active callout's divider, its end
+       aims at the front watch's hotspot (recomputed every frame as it moves). */
+    let activeIdx = -1;
+    function setActive(i) {
+      if (i === activeIdx) return;
+      activeIdx = i;
+      callouts.forEach((c, k) => {
+        const on = k === i;
+        c.classList.toggle('is-active', on);
+        c.setAttribute('aria-hidden', on ? 'false' : 'true');
+        const cta = c.querySelector('.cw-call__cta');
+        if (cta) cta.tabIndex = on ? 0 : -1;
+      });
+    }
+
+    // hotspot in viewport coords, accounting for object-fit:contain letterbox
+    function hotspotScreen(item, hs) {
+      const r = item.getBoundingClientRect();
+      const img = item.querySelector('img');
+      const natAR = (img && img.naturalWidth) ? img.naturalWidth / img.naturalHeight : r.width / r.height;
+      const boxAR = r.width / r.height;
+      let iw, ih;
+      if (natAR > boxAR) { iw = r.width; ih = r.width / natAR; }
+      else { ih = r.height; iw = r.height * natAR; }
+      const ox = (r.width - iw) / 2, oy = (r.height - ih) / 2;
+      return { x: r.left + ox + hs[0] * iw, y: r.top + oy + hs[1] * ih };
+    }
+
+    function updateLeader(bestI, frontF) {
+      if (!lineEl || !endEl) return;
+      if (!twoZone.matches) { lineEl.style.opacity = '0'; endEl.style.opacity = '0'; return; }
+      const sRect = sticky.getBoundingClientRect();
+      const active = callouts[bestI];
+      const div = active && active.querySelector('.cw-call__line');
+      if (!div) return;
+      const dRect = div.getBoundingClientRect();
+      const x1 = dRect.right - sRect.left;
+      const y1 = dRect.top + dRect.height / 2 - sRect.top;
+      const p = hotspotScreen(items[bestI], hotspots[bestI]);
+      const x2 = p.x - sRect.left;
+      const y2 = p.y - sRect.top;
+      lineEl.setAttribute('x1', x1.toFixed(1)); lineEl.setAttribute('y1', y1.toFixed(1));
+      lineEl.setAttribute('x2', x2.toFixed(1)); lineEl.setAttribute('y2', y2.toFixed(1));
+      endEl.setAttribute('cx', x2.toFixed(1)); endEl.setAttribute('cy', y2.toFixed(1));
+      const o = Math.max(0, Math.min(1, (frontF - 0.6) / 0.32)); // fade in as front settles
+      lineEl.style.opacity = (o * 0.5).toFixed(3);
+      endEl.style.opacity = (o * 0.9).toFixed(3);
+    }
+
+    let phase = 0, target = 0, running = false;
+
+    function render() {
+      const stageW = stage.clientWidth || window.innerWidth;
+      const spread = Math.min(stageW * 0.26, 340);
+      const bias = stageW * 0.06; // nudge the orbit right, away from the text zone
+      let best = -2, bestI = 0;
+      for (let i = 0; i < N; i++) {
+        let rel = ((i - phase) % N + N) % N; // 0..N
+        if (rel > N / 2) rel -= N;           // -N/2..N/2
+        const ang = (rel / N) * Math.PI * 2; // front = 0
+        const front = Math.cos(ang);         // 1 front .. -0.5 sides
+        const f = (front + 0.5) / 1.5;       // 0 .. 1 frontness
+        const x = bias + Math.sin(ang) * spread;
+        const scale = 0.62 + f * 0.46;
+        const op = 0.26 + f * 0.74;
+        const blur = (1 - f) * 5;
+        const item = items[i];
+        item.style.transform = 'translate(-50%,-50%) translate3d(' + x.toFixed(1) + 'px,0,0) scale(' + scale.toFixed(3) + ')';
+        item.style.opacity = op.toFixed(3);
+        item.style.filter = blur > 0.05 ? 'blur(' + blur.toFixed(1) + 'px)' : 'none';
+        item.style.zIndex = String(Math.round(f * 100) + 1);
+        if (f > best) { best = f; bestI = i; }
+      }
+      items.forEach((it, i) => it.setAttribute('aria-hidden', i === bestI ? 'false' : 'true'));
+      setActive(bestI);
+      updateLeader(bestI, best);
+    }
+
+    function progress() {
       const total = section.offsetHeight - window.innerHeight;
-      let p = total > 0 ? (-rect.top) / total : 0;
-      tl.progress(Math.max(0, Math.min(1, p)));
+      const p = total > 0 ? (-section.getBoundingClientRect().top) / total : 0;
+      return Math.max(0, Math.min(1, p));
     }
 
-    build();
-    if (lenis) lenis.on('scroll', update);
-    else window.addEventListener('scroll', update, { passive: true });
-    let rt;
-    window.addEventListener('resize', () => { clearTimeout(rt); rt = setTimeout(build, 150); });
+    function loop() {
+      target = progress() * (N - 1); // 0 -> first front, 1 -> last front
+      phase += (target - phase) * 0.12;
+      if (Math.abs(target - phase) < 0.0005) phase = target;
+      render();
+      if (running) requestAnimationFrame(loop);
+    }
+    function start() { if (!running) { running = true; requestAnimationFrame(loop); } }
+    function stop() { running = false; }
+
+    if ('IntersectionObserver' in window) {
+      new IntersectionObserver((ents) => { ents.forEach((en) => (en.isIntersecting ? start() : stop())); },
+        { rootMargin: '200px 0px' }).observe(section);
+    } else { start(); }
+
+    phase = target = progress() * (N - 1);
+    render();
+    window.addEventListener('resize', render);
+
+    function hintFade() { if (hint) hint.style.opacity = progress() > 0.03 ? '0' : '1'; }
+    if (lenis) lenis.on('scroll', hintFade); else window.addEventListener('scroll', hintFade, { passive: true });
+    hintFade();
   })();
 
   /* ---------- STAT COUNTERS ---------- */

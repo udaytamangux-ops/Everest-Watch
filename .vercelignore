@@ -1,0 +1,7 @@
+.agents
+.claude
+.frames
+.git
+.vercel
+server.err.log
+server.out.log
