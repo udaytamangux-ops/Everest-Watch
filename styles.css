@@ -448,15 +448,22 @@ body.menu-open .split-char{opacity:1;transform:translateY(0)}
 
 /* RIGHT — clipped watch stage */
 .cw__stage{position:relative;z-index:10;overflow:hidden}
+/* Card matches the product photo aspect (2752x1536 ≈ 1.79:1) so the watch fills
+   it with no letterbox — this lets the vignette mask line up with the image. */
 .cw-item{position:absolute;left:50%;top:50%;
-  width:clamp(280px,32vw,540px);height:clamp(340px,74vh,780px);
+  width:clamp(340px,46vw,720px);aspect-ratio:2752 / 1536;
   transform:translate(-50%,-50%);opacity:0;transform-origin:center center;
   will-change:transform,opacity,filter;backface-visibility:hidden}
 .cw-card{position:absolute;inset:0}
-/* JS keys out the studio backdrop at runtime (canvas brightness key), so the
-   watch floats on the black stage. Light saturation lift keeps dials rich. */
-.cw-card img{width:100%;height:100%;object-fit:contain;object-position:center center;
-  user-select:none;-webkit-user-drag:none;filter:saturate(1.05)}
+/* The client product is shot on a near-black spotlight backdrop. A radial
+   vignette mask dissolves the photo's rectangle edges into the black stage so
+   the watch reads as floating (a brightness key can't be used — the dark watch
+   body is as dark as the backdrop). The watch face stays crisp; the extremities
+   melt into shadow, which reads as an intentional editorial reveal. */
+.cw-card img{width:100%;height:100%;object-fit:cover;object-position:center center;
+  user-select:none;-webkit-user-drag:none;filter:saturate(1.04) brightness(.97);
+  -webkit-mask-image:radial-gradient(ellipse 86% 86% at 50% 50%, #000 42%, rgba(0,0,0,0) 84%);
+  mask-image:radial-gradient(ellipse 86% 86% at 50% 50%, #000 42%, rgba(0,0,0,0) 84%)}
 
 /* dynamic leader line (start pinned in text zone, end aimed at watch hotspot) */
 .cw__leader{position:absolute;inset:0;z-index:15;width:100%;height:100%;pointer-events:none;overflow:visible}
@@ -587,7 +594,7 @@ body.menu-open .split-char{opacity:1;transform:translateY(0)}
   .cw__callouts{min-height:0;max-width:none}
   .cw-call__title{font-size:clamp(26px,5vw,40px);white-space:normal}
   .cw__leader{display:none}
-  .cw-item{width:clamp(240px,60vw,440px);height:54vh}
+  .cw-item{width:clamp(260px,78vw,460px)}
   .collection-page{padding:90px 0 110px}
   .collection-page__head{padding:0 32px}
   .collection-page__grid{grid-template-columns:repeat(2,1fr);padding:0 32px}
@@ -626,7 +633,7 @@ body.menu-open .split-char{opacity:1;transform:translateY(0)}
   .hero__title-band{bottom:82px;min-height:128px}
   .hero__coordinate{display:none}
   .cw__text{padding-top:clamp(84px,13vh,110px)}
-  .cw-item{width:clamp(220px,76vw,380px);height:50vh}
+  .cw-item{width:clamp(240px,88vw,400px)}
   .cw-call__title{font-size:clamp(24px,6.4vw,34px)}
   .cw-call__line{width:84px;margin:14px 0 18px}
 }

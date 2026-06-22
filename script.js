@@ -182,40 +182,10 @@
       return [parseFloat(v[0]) || 0.5, parseFloat(v[1]) || 0.45];
     });
 
-    /* Background removal — key out the dark studio backdrop so each watch
-       floats on the black stage. Alpha is driven by the brightest channel
-       (value), not luminance, so the blue dials are preserved. One-time,
-       runs at a downscaled size for speed; same-origin so canvas is clean. */
-    (function keyOutBackdrops() {
-      const LO = 56, HI = 96, MAXW = 1000; // brightness key thresholds
-      stage.querySelectorAll('.cw-card img').forEach((img) => {
-        const run = () => {
-          if (!img.naturalWidth) return;
-          const scale = Math.min(1, MAXW / img.naturalWidth);
-          const w = Math.round(img.naturalWidth * scale);
-          const h = Math.round(img.naturalHeight * scale);
-          const c = document.createElement('canvas');
-          c.width = w; c.height = h;
-          const cx2 = c.getContext('2d');
-          cx2.drawImage(img, 0, 0, w, h);
-          let data;
-          try { data = cx2.getImageData(0, 0, w, h); } catch (e) { return; } // tainted -> leave as-is
-          const px = data.data;
-          for (let i = 0; i < px.length; i += 4) {
-            const val = Math.max(px[i], px[i + 1], px[i + 2]);
-            let a;
-            if (val <= LO) a = 0;
-            else if (val >= HI) a = 255;
-            else { const t = (val - LO) / (HI - LO); a = Math.round(t * t * (3 - 2 * t) * 255); }
-            px[i + 3] = a;
-          }
-          cx2.putImageData(data, 0, 0);
-          img.src = c.toDataURL('image/png');
-        };
-        if (img.complete && img.naturalWidth) run();
-        else img.addEventListener('load', run, { once: true });
-      });
-    })();
+    /* No runtime background removal needed: the client's product photography is
+       already shot on a near-black backdrop that vignettes to black at the edges,
+       so each watch melts into the black stage on its own. (A brightness key
+       would erase this dark watch, since the body is dark-on-dark.) */
 
     // reduced motion -> static text list + watch row (CSS .cw--static handles layout)
     if (reduced) {
@@ -404,7 +374,7 @@
       const im = new Image();
       im.onload = () => { loaded++; if (loaded === 1) draw(curFrame); if (loaded >= FRAMES) ready = true; };
       im.onerror = () => { loaded++; if (loaded >= FRAMES) ready = true; };
-      im.src = 'assets/seq/f_' + pad(i + 1) + '.jpg';
+      im.src = 'assets/seq/f_' + pad(i + 1) + '.jpg?v=2026062201';
       imgs[i] = im;
     }
 
